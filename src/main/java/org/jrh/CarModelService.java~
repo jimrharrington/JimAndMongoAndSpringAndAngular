@@ -1,0 +1,13 @@
+package org.jrh;
+
+import java.util.*;
+
+public interface CarModelService
+{
+    public List<CarModel> getModels();
+
+    public CarModel getModelByID( String id );
+}
+   
+
+    
