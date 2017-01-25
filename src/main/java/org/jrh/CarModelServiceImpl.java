@@ -12,12 +12,24 @@ public class CarModelServiceImpl
     private static MongoClient mongoClient;
     private static DB database;
     private static DBCollection collection;
+    private static Map<String,String> attrXref = new HashMap<String,String>();
 
     static
     {
         mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         database = mongoClient.getDB("test");
         collection = database.getCollection("makes");
+
+        attrXref.put( "_id", "id" );
+        attrXref.put( "make_id", "makeId" );
+        attrXref.put( "make_display", "makeDisplay" );
+        attrXref.put( "make_is_common", "makeIsCommon" );
+        attrXref.put( "make_country", "makeCountry" );
+        attrXref.put( "id", "_id" );
+        attrXref.put( "makeId", "make_id" );
+        attrXref.put( "makeDisplay", "make_display" );
+        attrXref.put( "makeIsCommon", "make_is_common" );
+        attrXref.put( "makeCountry", "make_country" );
     }
 
     public List<CarModel> getModels()
@@ -69,7 +81,7 @@ public class CarModelServiceImpl
         ArrayList<CarModel> rtn = new ArrayList<CarModel>();
 
         BasicDBObject regexQuery = new BasicDBObject();
-        regexQuery.put(attr,
+        regexQuery.put(translate( attr ),
                        new BasicDBObject("$regex", partialValue + ".*"));
         
         DBCursor cursor = collection.find(regexQuery);
@@ -136,6 +148,15 @@ public class CarModelServiceImpl
         WriteResult res = collection.remove( query );
 
         return (( res.wasAcknowledged() ) ? "success" : "fail" );
+    }
+
+    //
+    // Helpers
+    //
+
+    private String translate( String attrName )
+    {
+        return attrXref.get( attrName );
     }
 }
    

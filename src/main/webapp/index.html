@@ -1,32 +1,32 @@
-<html>
+<html ng-app="CarMakes" >
 
-  <body ng-app>
+  <body ng-controller="MainCtrl as ctrl">
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.11/angular-route.js"></script>
-    <script src="/static/js/app.js"></script>
+    <script src="/JimAndMongoAndSpringAndAngular/static/js/app.js"></script>
     
     <div style="background-color:LightGrey;color:black;padding:20px;">
       <div>
         Make ID:<br>
-        <input type="text" >
+        <input type="text" ng-model="ctrl.makeToEdit.makeId">
       </div>
       <div>
         Make Desc:<br>
-        <input type="text" >
+        <input type="text" ng-model="ctrl.makeToEdit.makeDisplay">
       </div>
       <div>
         Make is Common:<br>
-        <input type="text" >
+        <input type="text" ng-model="ctrl.makeToEdit.makeIsCommon">
       </div>
       <div>
         Make Country:<br>
-        <input type="text" >
+        <input type="text" ng-model="ctrl.makeToEdit.makeCountry">
       </div>
       <div>
         <br>
-        <input type="button" value="Add">
-        <input type="button" value="Save">
+        <input type="button" value="Add" ng-click="ctrl.save();">
+        <input type="button" value="Save" ng-click="ctrl.save();">
       </div>
     </div>
 
@@ -43,11 +43,18 @@
             <th>Common</th>
             <th>Country</th>
           </tr>
+          <tr ng-repeat="make in ctrl.makes">
+            <td><input type="radio" name="select" ng-model="ctrl.idValue" value="{{make.id}}" ng-change="ctrl.loadToEdit();"></td>
+            <td>{{make.makeId}}</td> 
+            <td>{{make.makeDisplay}}</td>
+            <td>{{make.makeIsCommon}}</td> 
+            <td>{{make.makeCountry}}</td>
+          </tr>
         </table>
       </div>
       <div>
         <br>
-        Attribute: <input type="text" > Value: <input type="text" > <input type="button" value="">
+        Attribute: <input type="text" ng-model="ctrl.attr" > Value: <input type="text" ng-model="ctrl.value" > <input type="button" value="Search" ng-click="ctrl.search();">
       </div>
     </div>
     

@@ -4,25 +4,27 @@ function CarMakeService( $http )
     var makes = [];
     var makeToEdit = { id: '', makeId : '', makeDisplay : '', makeIsCommon : '', makeCountry : '' };
     
-    this.search = function( attr, value)
+    this.search = function( attr, value, callbk )
     {
         var self = this;
 
-        $http.get( "/webservice/models/search/" + attr + "/" + value )
+        $http.get( "/JimAndMongoAndSpringAndAngular/webservice/models/search/" + attr + "/" + value )
             .then(function(response) {
                 self.makes = response.data;
+                callbk();
             }, function(errResponse) {
                 console.error('Error while searching car makes');
             });
     };
 
-    this.byID = function( id )
+    this.byID = function( id, callbk )
     {
         var self = this;
 
-        $http.get( "/webservice/models/byID/" + id )
+        $http.get( "/JimAndMongoAndSpringAndAngular/webservice/models/byID/" + id )
             .then(function(response) {
                 self.makeToEdit = response.data;
+                callbk();
             }, function(errResponse) {
                 console.error('Error while loading car make by id');
             });
@@ -32,7 +34,7 @@ function CarMakeService( $http )
     {
         var self = this;
 
-        $http.post( "/webservice/models/write/", self.makeToEdit )
+        $http.post( "/JimAndMongoAndSpringAndAngular/webservice/models/write/", self.makeToEdit )
             .then(function(response) {
                 self.makeToEdit = { id: '', makeId : '', makeDisplay : '', makeIsCommon : '', makeCountry : '' };
             }, function(errResponse) {
@@ -54,14 +56,7 @@ function CarMakeService( $http )
 }
 
 angular.module('CarMakes', [])
-    .controller('MainCtrl', [function() {
-        var self = this;
-        self.tab = 'first';
-        self.open = function(tab) {
-            self.tab = tab;
-        };
-    }])
-    .controller('SubCtrl',
+    .controller('MainCtrl',
                 ['CarMakeService', function(CarMakeService) {
                     var self = this;
 
@@ -69,9 +64,20 @@ angular.module('CarMakes', [])
                     self.value = null;
                     self.selectedIndex = -1;
                     self.selectedId = null;
+                    self.makes = [];
+                    self.makeToEdit = { id: '', makeId : '', makeDisplay : '', makeIsCommon : '', makeCountry : '' };
+                    self.idValue = null;
+
+                    self.updateMakes = function() {
+                        self.makes = CarMakeService.makes;
+                    }
+
+                    self.updateMakeToEdit  = function() {
+                        self.makeToEdit = CarMakeService.makeToEdit;
+                    }
                     
                     self.search = function() {
-                        return CarMakeService.search( self.attr, self.value );
+                        return CarMakeService.search( self.attr, self.value, self.updateMakes );
                     };
 
                     self.setSelectedIndex = function( offset ) {
@@ -87,7 +93,10 @@ angular.module('CarMakes', [])
                     };
 
                     self.loadToEdit = function() {
-                        CarMakeService.byID( self.selectedId );
+                        //if ( self.idValue != null )
+                        //{
+                            CarMakeService.byID( self.idValue, self.updateMakeToEdit );
+                        //}
                     };
 
                     self.newMake = function() {
