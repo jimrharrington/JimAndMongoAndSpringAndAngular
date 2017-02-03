@@ -54,7 +54,7 @@
       </div>
       <div>
         <br>
-        Attribute: <input type="text" ng-model="ctrl.attr" > Value: <input type="text" ng-model="ctrl.value" > <input type="button" value="Search" ng-click="ctrl.search();">
+        Attribute: <select name="attr" ng-model="ctrl.attr" ><option value="makeId">ID</option><option value="makeDisplay">Name</option><option value="makeIsCommon">Common</option><option value="makeCountry">Country</option></select> Value: <input type="text" ng-model="ctrl.value" > <input type="button" value="Search" ng-click="ctrl.search();">
       </div>
     </div>
     
