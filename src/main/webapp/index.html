@@ -34,14 +34,14 @@
     </div>
 
     <div style="background-color:LightGrey;color:black;padding:20px;">
-      <div>
+      <div style="overflow:auto;height:400px;">
         <table style="width:100%">
           <tr>
-            <th></th>
-            <th>ID</th>
-            <th>Description</th> 
-            <th>Common</th>
-            <th>Country</th>
+            <th style="text-align:left">Select</th>
+            <th style="text-align:left">ID</th>
+            <th style="text-align:left">Description</th> 
+            <th style="text-align:left">Common</th>
+            <th style="text-align:left">Country</th>
           </tr>
           <tr ng-repeat="make in ctrl.makes">
             <td><input type="radio" name="select" ng-model="ctrl.idValue" value="{{make.id}}" ng-change="ctrl.loadToEdit();"></td>
