@@ -1,0 +1,35 @@
+<div style="background-color:LightGrey;color:black;padding:20px;" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" ng-click="ctrl.close('Cancel')" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Search Car Makes</h4>
+      </div>
+      <div style="overflow:auto;height:400px;" class="modal-body">
+        <table style="width:100%">
+          <tr>
+            <th style="text-align:left">Select</th>
+            <th style="text-align:left">ID</th>
+            <th style="text-align:left">Description</th> 
+            <th style="text-align:left">Common</th>
+            <th style="text-align:left">Country</th>
+          </tr>
+          <tr ng-repeat="make in ctrl.makes">
+            <td><input type="radio" name="select" ng-model="ctrl.idValue" value="{{make.id}}" ></td>
+            <td>{{make.makeId}}</td> 
+            <td>{{make.makeDisplay}}</td>
+            <td>{{make.makeIsCommon}}</td> 
+            <td>{{make.makeCountry}}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="modal-footer">
+        Attribute: <select name="attr" ng-model="ctrl.attr" ><option value="makeId">ID</option><option value="makeDisplay">Name</option><option value="makeIsCommon">Common</option><option value="makeCountry">Country</option></select> Value: <input type="text" ng-model="ctrl.value" > <input type="button" value="Search" ng-click="ctrl.search();">
+        <br>
+        <button type="button" ng-click="ctrl.close('Cancel')" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" ng-click="ctrl.close('OK')" class="btn btn-primary" data-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

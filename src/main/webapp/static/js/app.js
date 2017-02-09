@@ -3,6 +3,7 @@ function CarMakeService( $http )
 {
     var makes = [];
     var makeToEdit = { id: '', makeId : '', makeDisplay : '', makeIsCommon : '', makeCountry : '' };
+    var idValue = null;
     
     this.search = function( attr, value, callbk )
     {
@@ -17,11 +18,11 @@ function CarMakeService( $http )
             });
     };
 
-    this.byID = function( id, callbk )
+    this.byID = function( callbk )
     {
         var self = this;
 
-        $http.get( "/JimAndMongoAndSpringAndAngular/webservice/models/byID/" + id )
+        $http.get( "/JimAndMongoAndSpringAndAngular/webservice/models/byID/" + this.idValue )
             .then(function(response) {
                 self.makeToEdit = response.data;
                 callbk();
@@ -55,48 +56,20 @@ function CarMakeService( $http )
     }
 }
 
-angular.module('CarMakes', [])
+angular.module('CarMakes', ['angularModalService', 'ngAnimate'])
     .controller('MainCtrl',
-                ['CarMakeService', function(CarMakeService) {
+                ['CarMakeService', 'ModalService', function(CarMakeService, ModalService) {
                     var self = this;
 
-                    self.attr = null;
-                    self.value = null;
-                    self.selectedIndex = -1;
-                    self.selectedId = null;
-                    self.makes = [];
+                    self.searchModal = null;
                     self.makeToEdit = { id: '', makeId : '', makeDisplay : '', makeIsCommon : '', makeCountry : '' };
-                    self.idValue = null;
-
-                    self.updateMakes = function() {
-                        self.makes = CarMakeService.makes;
-                    }
 
                     self.updateMakeToEdit  = function() {
                         self.makeToEdit = CarMakeService.makeToEdit;
                     }
                     
-                    self.search = function() {
-                        return CarMakeService.search( self.attr, self.value, self.updateMakes );
-                    };
-
-                    self.setSelectedIndex = function( offset ) {
-                        self.selectedIndex = offset;
-                    };
-
-                    self.setSelectedId = function( id ) {
-                        self.selectedId = id;
-                    };
-
-                    self.edit = function() {
-                        CarMakeService.edit( self.selectedIndex );
-                    };
-
                     self.loadToEdit = function() {
-                        //if ( self.idValue != null )
-                        //{
-                            CarMakeService.byID( self.idValue, self.updateMakeToEdit );
-                        //}
+                        CarMakeService.byID( self.updateMakeToEdit );
                     };
 
                     self.newMake = function() {
@@ -106,5 +79,51 @@ angular.module('CarMakes', [])
                     self.save = function() {
                         CarMakeService.write();
                     };
+
+                    self.showDialog = function() {
+                        ModalService.showModal({
+                            templateUrl: "/JimAndMongoAndSpringAndAngular/modal.html",
+                            controller: "ModalController",
+                            controllerAs: "ctrl",
+                            inputs: ['CarMakeService', 'close']
+                        }).then(function(modal) {
+                            self.searchModal = modal;
+                            modal.element.modal();
+                            modal.close.then(function(result) {
+                                if ( result == "OK" ) 
+                                {
+                                    self.loadToEdit();
+                                }
+                            });
+                        });
+                    };
+
                 }])
-    .service('CarMakeService', [ '$http', CarMakeService]);
+    .service('CarMakeService', ['$http', CarMakeService])
+    .controller('ModalController', ['CarMakeService', 'close', function(CarMakeService, baseClose) {
+        
+        var self = this;
+
+        self.makes = [];
+        self.attr = null;
+        self.value = null;
+        self.idValue = null;
+
+        self.search = function() {
+            return CarMakeService.search( self.attr, self.value, self.updateMakes );
+        };
+
+        self.updateMakes = function() {
+            self.makes = CarMakeService.makes;
+        }
+
+        self.close = function(result) {
+            if ( result == "OK" )
+            {
+                CarMakeService.idValue = self.idValue;
+            }
+
+            baseClose(result, 500); // close, but give 500ms for bootstrap to animate
+        };
+        
+    }]);
