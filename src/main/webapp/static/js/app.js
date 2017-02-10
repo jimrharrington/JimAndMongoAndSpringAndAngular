@@ -56,74 +56,82 @@ function CarMakeService( $http )
     }
 }
 
-angular.module('CarMakes', ['angularModalService', 'ngAnimate'])
-    .controller('MainCtrl',
-                ['CarMakeService', 'ModalService', function(CarMakeService, ModalService) {
-                    var self = this;
+angular.module('CarMakes', ['ui.bootstrap']);
 
-                    self.searchModal = null;
-                    self.makeToEdit = { id: '', makeId : '', makeDisplay : '', makeIsCommon : '', makeCountry : '' };
+angular.module('CarMakes').service('CarMakeService', 
+                                   ['$http', CarMakeService]);
 
-                    self.updateMakeToEdit  = function() {
-                        self.makeToEdit = CarMakeService.makeToEdit;
-                    }
-                    
-                    self.loadToEdit = function() {
-                        CarMakeService.byID( self.updateMakeToEdit );
-                    };
+angular.module('CarMakes').controller('ModalController', 
+                                      ['CarMakeService', '$scope','$modalInstance', function(CarMakeService, $scope, $modalInstance) 
+ {                                          
+     var self = this;
+     
+     self.makes = [];
+     self.attr = null;
+     self.value = null;
+     self.idValue = null;
 
-                    self.newMake = function() {
-                        CarMakeService.add();
-                    };
+     self.search = function() {
+         return CarMakeService.search( self.attr, self.value, self.updateMakes );
+     };
 
-                    self.save = function() {
-                        CarMakeService.write();
-                    };
+     self.updateMakes = function() {
+         self.makes = CarMakeService.makes;
+     }
 
-                    self.showDialog = function() {
-                        ModalService.showModal({
-                            templateUrl: "/JimAndMongoAndSpringAndAngular/modal.html",
-                            controller: "ModalController",
-                            controllerAs: "ctrl",
-                            inputs: ['CarMakeService', 'close']
-                        }).then(function(modal) {
-                            self.searchModal = modal;
-                            modal.element.modal();
-                            modal.close.then(function(result) {
-                                if ( result == "OK" ) 
-                                {
-                                    self.loadToEdit();
-                                }
-                            });
-                        });
-                    };
+     self.close = function(result) {
+         if ( result == "OK" )
+         {
+             CarMakeService.idValue = self.idValue;
+         }
 
-                }])
-    .service('CarMakeService', ['$http', CarMakeService])
-    .controller('ModalController', ['CarMakeService', 'close', function(CarMakeService, baseClose) {
-        
-        var self = this;
+         $modalInstance.close(result);
+     };
+     
+ }]);
 
-        self.makes = [];
-        self.attr = null;
-        self.value = null;
-        self.idValue = null;
+angular.module('CarMakes').controller('MainCtrl',
+                                      ['CarMakeService', '$scope','$modal', function(CarMakeService, $scope, $modal ) 
+  {
+      var self = this;
+      
+      self.searchModal = null;
+      self.makeToEdit = { id: '', makeId : '', makeDisplay : '', makeIsCommon : '', makeCountry : '' };
+      self.modalInstance = null;
+      
+      self.updateMakeToEdit  = function() {
+          self.makeToEdit = CarMakeService.makeToEdit;
+      }
+      
+      self.loadToEdit = function() {
+          CarMakeService.byID( self.updateMakeToEdit );
+      };
+      
+      self.newMake = function() {
+          CarMakeService.add();
+      };
+      
+      self.save = function() {
+          CarMakeService.write();
+      };
+      
+      self.showDialog = function() 
+       {
+           self.modalInstance = $modal.open({
+               templateUrl: "/JimAndMongoAndSpringAndAngular/modal.html",
+               controller: "ModalController",
+               controllerAs: "ctrl" //,
+               //inputs: ['CarMakeService', '$scope','$modalInstance']
+           });
+           
+           self.modalInstance.result.then(function(val) 
+             {
+                 if ( val == "OK" ) 
+                 {
+                     self.loadToEdit();
+                 }
+             });
+       };
+      
+  }]);
 
-        self.search = function() {
-            return CarMakeService.search( self.attr, self.value, self.updateMakes );
-        };
-
-        self.updateMakes = function() {
-            self.makes = CarMakeService.makes;
-        }
-
-        self.close = function(result) {
-            if ( result == "OK" )
-            {
-                CarMakeService.idValue = self.idValue;
-            }
-
-            baseClose(result, 500); // close, but give 500ms for bootstrap to animate
-        };
-        
-    }]);
