@@ -7,31 +7,18 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.css">
 
     <script src="/JimAndMongoAndSpringAndAngular/static/js/app.js"></script>
-    
+
     <div style="background-color:LightGrey;color:black;padding:20px;">
-      <div>
-        Make ID:<br>
-        <input type="text" ng-model="ctrl.makeToEdit.makeId">
-      </div>
-      <div>
-        Make Desc:<br>
-        <input type="text" ng-model="ctrl.makeToEdit.makeDisplay">
-      </div>
-      <div>
-        Make is Common:<br>
-        <input type="text" ng-model="ctrl.makeToEdit.makeIsCommon">
-      </div>
-      <div>
-        Make Country:<br>
-        <input type="text" ng-model="ctrl.makeToEdit.makeCountry">
-      </div>
-      <div>
-        <br>
-        <input type="button" value="Add" ng-click="ctrl.save();">
-        <input type="button" value="Save" ng-click="ctrl.save();">
-                                          
-        <input type="button" value="Search" ng-click="ctrl.showDialog();">
-      </div>
+      <input type="button" value="Save" ng-click="ctrl.save();">
+      <br>
+      <input type="button" value="Search" ng-click="ctrl.showDialog();">
+    </div>
+
+    <div style="background-color:white;color:white;padding:20px;">
+    </div>
+    
+    <div style="background-color:LightGrey;color:black;padding:20px;" ng-repeat="thisMake in ctrl.openMakes" >
+      <div make-widget></div>
     </div>
     
   </body>

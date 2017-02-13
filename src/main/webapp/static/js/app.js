@@ -90,6 +90,13 @@ angular.module('CarMakes').controller('ModalController',
      
  }]);
 
+angular.module('CarMakes').directive( 'makeWidget', [function() 
+{
+    return {
+        templateUrl: "/JimAndMongoAndSpringAndAngular/make.html"
+    };
+}]);
+
 angular.module('CarMakes').controller('MainCtrl',
                                       ['CarMakeService', '$scope','$modal', function(CarMakeService, $scope, $modal ) 
   {
@@ -97,10 +104,12 @@ angular.module('CarMakes').controller('MainCtrl',
       
       self.searchModal = null;
       self.makeToEdit = { id: '', makeId : '', makeDisplay : '', makeIsCommon : '', makeCountry : '' };
+      self.openMakes = [];
+      self.openMakesById = {};
       self.modalInstance = null;
       
       self.updateMakeToEdit  = function() {
-          self.makeToEdit = CarMakeService.makeToEdit;
+          self.addMake( CarMakeService.makeToEdit );
       }
       
       self.loadToEdit = function() {
@@ -111,8 +120,25 @@ angular.module('CarMakes').controller('MainCtrl',
           CarMakeService.add();
       };
       
-      self.save = function() {
+      self.save = function( id ) {
+          len = self.openMakesById[id];
+          makeToSave = self.openMakes[len];
+          CarMakeService.makeToEdit = makeToSave;
           CarMakeService.write();
+          self.removeMake( makeToSave );
+      };
+
+      self.addMake = function( make ) {
+          id = make.id;
+          len = self.openMakes.length;
+          self.openMakesById[id] = len;
+          self.openMakes.push( make );
+      };
+
+      self.removeMake = function( make ) {
+          id = make.id;
+          offset = self.openMakesById[id];
+          self.openMakes.splice( offset, 1 );
       };
       
       self.showDialog = function() 

@@ -1,0 +1,22 @@
+    <div style="background-color:LightGrey;color:black;padding:20px;">
+      <div>
+        Make ID:<br>
+        <input type="text" ng-model="thisMake.makeId">
+      </div>
+      <div>
+        Make Desc:<br>
+        <input type="text" ng-model="thisMake.makeDisplay">
+      </div>
+      <div>
+        Make is Common:<br>
+        <input type="text" ng-model="thisMake.makeIsCommon">
+      </div>
+      <div>
+        Make Country:<br>
+        <input type="text" ng-model="thisMake.makeCountry">
+      </div>
+      <div>
+        <br>
+        <input type="button" value="Save" ng-click="ctrl.save(thisMake.id);">
+      </div>
+    </div>
