@@ -1,9 +1,11 @@
 
 function CarMakeService( $http )
 {
-    var makes = [];
-    var makeToEdit = { id: '', makeId : '', makeDisplay : '', makeIsCommon : '', makeCountry : '' };
-    var idValue = null;
+    var self = this;
+
+    self.makes = [];
+    self.makesToEdit = [];
+    self.idValues = [];
     
     this.search = function( attr, value, callbk )
     {
@@ -22,13 +24,38 @@ function CarMakeService( $http )
     {
         var self = this;
 
-        $http.get( "/JimAndMongoAndSpringAndAngular/webservice/models/byID/" + this.idValue )
-            .then(function(response) {
-                self.makeToEdit = response.data;
-                callbk();
-            }, function(errResponse) {
-                console.error('Error while loading car make by id');
-            });
+        //
+        // OK, we only want to call the update callback when all the server requests
+        // have returned and this guy tracks that.
+        //
+
+        var numSent = 0;
+
+        for( var i = 0; i < self.idValues.length; ++i )
+        {
+            ++numSent;
+
+            $http.get( "/JimAndMongoAndSpringAndAngular/webservice/models/byID/" + this.idValues[i] )
+                .then(function(response) {
+                    self.makesToEdit.push( response.data );
+                    --numSent;
+
+                    if ( numSent <= 0 )
+                    {
+                        callbk();
+                    }
+                }, function(errResponse) {
+                    console.error('Error while loading car make by id');
+                    --numSent;
+
+                    if ( numSent <= 0 )
+                    {
+                        callbk();
+                    }
+                });
+        }
+
+        
     };
     
     this.write = function()
@@ -39,7 +66,7 @@ function CarMakeService( $http )
                     self.makeToEdit,
                     { transformResponse: [function (data) { return data; }] })
             .then(function(response) {
-                self.makeToEdit = { id: '', makeId : '', makeDisplay : '', makeIsCommon : '', makeCountry : '' };
+                
             }, function(errResponse) {
                 console.error('Error while writing car make');
             });
@@ -48,7 +75,6 @@ function CarMakeService( $http )
     this.add = function()
     {
         var self = this;
-        self.makeToEdit = { id: '', makeId : '', makeDisplay : '', makeIsCommon : '', makeCountry : '' };
     }
 
     this.edit = function( toEditIndex )
@@ -71,7 +97,7 @@ angular.module('CarMakes').controller('ModalController',
      self.makes = [];
      self.attr = null;
      self.value = null;
-     self.idValue = null;
+     self.idValues = [];
 
      self.search = function() {
          return CarMakeService.search( self.attr, self.value, self.updateMakes );
@@ -84,7 +110,17 @@ angular.module('CarMakes').controller('ModalController',
      self.close = function(result) {
          if ( result == "OK" )
          {
-             CarMakeService.idValue = self.idValue;
+             for( var i = 0; i < self.makes.length; ++i )
+             {
+                 var make = self.makes[i];
+
+                 if ( make.selected )
+                 {
+                     self.idValues.push( make.id );
+                 }
+             }
+
+             CarMakeService.idValues = self.idValues;
          }
 
          $modalInstance.close(result);
@@ -111,7 +147,7 @@ angular.module('CarMakes').controller('MainCtrl',
       self.modalInstance = null;
       
       self.updateMakeToEdit  = function() {
-          self.addMake( CarMakeService.makeToEdit );
+          self.addMakes( CarMakeService.makesToEdit );
       }
       
       self.loadToEdit = function() {
@@ -128,6 +164,15 @@ angular.module('CarMakes').controller('MainCtrl',
           CarMakeService.makeToEdit = makeToSave;
           CarMakeService.write();
           self.removeMake( makeToSave );
+      };
+
+      self.addMakes = function( makes ) {
+          for( var i = 0; i < makes.length; ++i )
+          {
+              var make = makes[i];
+
+              self.addMake( make );
+          }
       };
 
       self.addMake = function( make ) {

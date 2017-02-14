@@ -18,12 +18,12 @@
           <th style="text-align:left">Country</th>
         </tr>
         <tr ng-repeat="make in ctrl.makes">
-          <td><input type="radio" name="select" ng-model="ctrl.idValue" value="{{make.id}}" ></td>
+          <td><input type="checkbox" name="select" ng-model="make.selected" ></td>
           <td>{{make.makeId}}</td> 
           <td>{{make.makeDisplay}}</td>
           <td>{{make.makeIsCommon}}</td> 
           <td>{{make.makeCountry}}</td>
-        </tr>
+        </tr> 
       </table>
     </div>
     <div class="modal-footer">
