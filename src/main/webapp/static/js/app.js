@@ -35,7 +35,9 @@ function CarMakeService( $http )
     {
         var self = this;
 
-        $http.post( "/JimAndMongoAndSpringAndAngular/webservice/models/write/", self.makeToEdit )
+        $http.post( "/JimAndMongoAndSpringAndAngular/webservice/models/write/", 
+                    self.makeToEdit,
+                    { transformResponse: [function (data) { return data; }] })
             .then(function(response) {
                 self.makeToEdit = { id: '', makeId : '', makeDisplay : '', makeIsCommon : '', makeCountry : '' };
             }, function(errResponse) {
@@ -139,6 +141,14 @@ angular.module('CarMakes').controller('MainCtrl',
           id = make.id;
           offset = self.openMakesById[id];
           self.openMakes.splice( offset, 1 );
+          
+          self.openMakesById = {};
+          numMakes = self.openMakes.length;
+          for( var i = 0; i < numMakes; ++i )
+          {
+              var make = self.openMakes[i];
+              self.openMakesById[make.id] = i;
+          } 
       };
       
       self.showDialog = function() 
@@ -146,8 +156,7 @@ angular.module('CarMakes').controller('MainCtrl',
            self.modalInstance = $modal.open({
                templateUrl: "/JimAndMongoAndSpringAndAngular/modal.html",
                controller: "ModalController",
-               controllerAs: "ctrl" //,
-               //inputs: ['CarMakeService', '$scope','$modalInstance']
+               controllerAs: "ctrl"
            });
            
            self.modalInstance.result.then(function(val) 
