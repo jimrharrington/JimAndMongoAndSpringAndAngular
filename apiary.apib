@@ -1,0 +1,68 @@
+FORMAT: 1A
+HOST: http://polls.apiblueprint.org/
+
+# Reservation Operations
+
+Reservation service in the POC version of HDP.
+
+## Query by reservation code [/reservation/{code}/{type}/]
+
+### Details [GET]
+
++ Response 200 (application/json)
+
+        {
+            "allocation_code": "code",
+            "allocation_date": "date",
+            "reservation_code": "code",
+            "reservation_date": "date"
+        }
+        
+## Query by hotel [/reservation/by/hotel/{key}/]
+
++ Parameters
+    + key (UUID) - The hotel's application identifier
+
+### Details [GET]
+
++ Response 200 (application/json)
+
+        [
+            {
+                "allocation_code": "code",
+                "allocation_date": "date",
+                "reservation_code": "code",
+                "reservation_date": "date"
+            }
+        ]
+
+## Create [/reservation/create]
+
+### Details [PUT]
+
++ Request (application/json)
+
+        {
+            "allocation_code": "code"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "allocation_code": "code",
+            "allocation_date": "date",
+            "reservation_code": "code",
+            "reservation_date": "date"
+        }
+
+## Cancel [/reservation/cancel]
+
+### Details [DELETE]
+
++ Request (application/json)
+
+        {
+            "reservation_code": "code"
+        }
+        
++ Response 200
